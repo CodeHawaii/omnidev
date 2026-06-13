@@ -1,0 +1,43 @@
+name: pr-build
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Buildx
+        uses: docker/setup-buildx-action@v4.1.0
+
+      - name: Build (amd64, load locally — no push)
+        uses: docker/build-push-action@v7.2.0
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          push: false
+          tags: omnidev:pr
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test the toolchain
+        run: |
+          docker run --rm omnidev:pr bash -lc '
+            set -euo pipefail
+            go version
+            node --version
+            npm --version
+            pnpm --version
+            yarn --version
+            python3 --version
+            uv --version
+            git --version
+            cc --version | head -1
+            make --version | head -1'

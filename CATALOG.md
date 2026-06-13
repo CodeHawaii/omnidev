@@ -12,8 +12,8 @@ run as a non-root `dev` user (uid 1000), and use `tini` as PID 1.
 **Decision rule:** need to *run code/tests/builds* → `omnidev`. Need an *agent that
 writes code* → `omniagent` (it includes everything omnidev has).
 
-**Tags (both images):** `:latest` (recommended), `:edge` (newest `main` build),
-`:sha-<commit>` (immutable pin). No semver tags are published yet.
+**Tags (both images):** `:0.0.1` (pin an exact release), `:0.0` (minor track),
+`:latest` (recommended), `:edge` (newest `main` build), `:sha-<commit>` (commit pin).
 
 ---
 

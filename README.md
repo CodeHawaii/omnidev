@@ -36,10 +36,14 @@ docker pull ghcr.io/codehawaii/omnidev:latest
 | C dev headers | — | `libssl` `zlib` `libffi` `libsqlite3` `libreadline` `libbz2` `liblzma` `libxml2` `libxslt1` |
 | VCS / net | — | `git`, `git-lfs`, `openssh-client`, `gnupg`, `curl`, `wget`, `ca-certificates` |
 | CLI | — | `jq`, `ripgrep` (`rg`), `fd`, `tree`, `unzip`, `zip`, `xz`, `file`, `patch`, `less`, `vim-tiny`, `nano` |
+| Debug / TUI | — | `gdb`, `tmux`, `tig`, `fzf`, `htop` |
+| Databases | — | clients `psql` / `mysql` / `redis-cli` + headers `libpq-dev`, `default-libmysqlclient-dev` |
+| Python libs | — | preinstalled glue: `requests` `httpx` `pyyaml` `orjson` `beautifulsoup4` `lxml` `rich` `tabulate` `pydantic` `click` `tqdm` `python-dateutil` `python-dotenv` (heavy libs like numpy/pandas via `uv pip install`) |
+| Go dev tools | — | `gopls`, `goimports`, `golangci-lint`, `dlv` |
 
-Deliberately **out of scope** to stay lean: headless Chromium/Puppeteer, DB client
-headers (`libpq`, mysql), image libs (`libjpeg`/`png`/`webp`), `clang`/`lldb`/`valgrind`,
-Docker-in-Docker. Add them in a downstream `FROM ghcr.io/codehawaii/omnidev` image if needed.
+Deliberately **out of scope** to stay lean: headless Chromium/Puppeteer, image
+libs (`libjpeg`/`png`/`webp`), `clang`/`lldb`/`valgrind`, Docker-in-Docker, heavy
+numeric Python stacks. Add them in a downstream `FROM ghcr.io/codehawaii/omnidev` image.
 
 ---
 

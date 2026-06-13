@@ -33,6 +33,8 @@ writes code* → `omniagent` (it includes everything omnidev has).
 | Go | 1.26.x | gcc / g++ | 14 |
 | make / cmake / pkg-config | ✓ | git / git-lfs / openssh | ✓ |
 | jq / ripgrep (`rg`) / fd / tree | ✓ | curl / wget / unzip / xz | ✓ |
+| gdb / tmux / tig / fzf / htop | ✓ | DB clients psql / mysql / redis-cli | ✓ |
+| Go tools gopls / golangci-lint / dlv | ✓ | Python glue libs (requests/httpx/pydantic/lxml/rich…) | ✓ |
 
 Env defaults: `LANG=C.UTF-8`, `GOPATH=/home/dev/go`, `GOTOOLCHAIN=local`,
 `PNPM_HOME=/pnpm`, `UV_CACHE_DIR=/home/dev/.cache/uv`. Default workdir `/work`.
@@ -87,6 +89,7 @@ stronger isolation set `OMNIDEV_RUNTIME=runsc` (gVisor) or use a microVM.
 |-------|---------|----------|----------------------|
 | Claude Code | `claude` | `claude -p "..."` | `ANTHROPIC_API_KEY` |
 | OpenAI Codex | `codex` | `codex exec "..."` | `OPENAI_API_KEY` |
+| GitHub Copilot | `copilot` | `copilot -p "..."` | `GITHUB_TOKEN` (Copilot-enabled) |
 | Aider | `aider` | `aider --yes-always` | `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` (BYO) |
 | Goose | `goose` | `goose run -t "..."` | provider key of choice |
 | Crush | `crush` | `crush run "..."` | provider key of choice |

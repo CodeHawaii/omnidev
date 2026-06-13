@@ -78,6 +78,41 @@ RUN set -eux; \
 COPY --from=ghcr.io/astral-sh/uv:0.11.21 /uv /uvx /usr/local/bin/
 
 # ---------------------------------------------------------------------------
+# 4b) Extra dev CLIs + database clients/headers (separate layer so the
+#     toolchain layers above stay cached).
+# ---------------------------------------------------------------------------
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+      gdb fzf tmux tig htop \
+      postgresql-client default-mysql-client redis-tools \
+      libpq-dev default-libmysqlclient-dev; \
+    apt-get clean; rm -rf /var/lib/apt/lists/*
+
+# ---------------------------------------------------------------------------
+# 4c) Common lightweight Python "glue" libraries + pip default config.
+#     Heavy numerical libs (numpy/pandas/...) stay on-demand to keep it lean.
+# ---------------------------------------------------------------------------
+RUN set -eux; \
+    printf '[global]\nbreak-system-packages = true\n' > /etc/pip.conf; \
+    uv pip install --system --break-system-packages \
+      requests httpx pyyaml orjson beautifulsoup4 lxml rich tabulate \
+      python-dateutil python-dotenv pydantic click tqdm; \
+    rm -rf /root/.cache/uv
+
+# ---------------------------------------------------------------------------
+# 4d) Go developer tools — gopls/goimports/dlv via `go install`, golangci-lint
+#     from its release binary. Slow-changing, isolated layer.
+# ---------------------------------------------------------------------------
+RUN set -eux; \
+    export PATH="/usr/local/go/bin:$PATH" GOPATH=/root/go GOBIN=/usr/local/bin GOFLAGS=-mod=mod GOTOOLCHAIN=local; \
+    go install golang.org/x/tools/gopls@latest; \
+    go install golang.org/x/tools/cmd/goimports@latest; \
+    go install github.com/go-delve/delve/cmd/dlv@latest; \
+    curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b /usr/local/bin; \
+    rm -rf /root/go /root/.cache/go-build
+
+# ---------------------------------------------------------------------------
 # 5) Non-root user + writable dirs. Last because it changes most often.
 # ---------------------------------------------------------------------------
 RUN set -eux; \
@@ -128,7 +163,10 @@ RUN set -eux; \
     node --version; npm --version; pnpm --version; yarn --version; \
     python3 --version; uv --version; \
     git --version; rg --version | head -1; fd --version; jq --version; \
-    cc --version | head -1; make --version | head -1; tini --version
+    cc --version | head -1; make --version | head -1; tini --version; \
+    gdb --version | head -1; tmux -V; psql --version; \
+    golangci-lint --version; gopls version | head -1; dlv version | head -1; goimports -h 2>/dev/null | head -1 || true; \
+    python3 -c 'import requests, httpx, yaml, orjson, bs4, lxml, rich, tabulate, dateutil, dotenv, pydantic, click, tqdm; print("py-glue ok")'
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["bash"]
